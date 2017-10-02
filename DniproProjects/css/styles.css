@@ -1,0 +1,84 @@
+p {
+    margin:0;
+}
+
+body {
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#status {
+    padding: 20px;
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+.projects {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.project {
+    border: solid 1px #000000;
+    border-radius: 5px;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 10pt;
+    background-color: #eef;
+    max-width: 200px;
+}
+
+.project-selected {
+    background-color: #fee;
+}
+
+.project-order {
+    float: left;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 10pt;
+    color: green;
+}
+
+.project-votes:before {
+    content: "Голосів: ";
+}
+
+.project-votes {
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.project-cost:before {
+    content: "Вартість: ";
+}
+
+.project-cost {
+    font-size: 10pt;
+}
+
+.project-cost-sum:before {
+    content: "З попередніми: ";
+}
+
+.project-cost-sum {
+    font-size: 10pt;
+}
+
+.project-name {
+    font-size: 8pt;
+    font-weight: bold;
+    margin-top: 3px;
+}
+
+.project-desc {
+    font-size: 8pt;
+    margin-top: 3px;
+}
+
