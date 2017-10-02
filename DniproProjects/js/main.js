@@ -1,6 +1,6 @@
-var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
+//var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
 //var cors_api_url = 'https://crossorigin.me/';
-//var cors_api_url = '';
+var cors_api_url = '';
 function doCORSRequest(options, processResult) {
     var x = new XMLHttpRequest();
     x.open("GET", cors_api_url + options.url);
@@ -10,23 +10,40 @@ function doCORSRequest(options, processResult) {
     x.send(options.data);
 }
 
-var desiredProjectsNum = 210;
+// var METHOD = 1; // Parse project listings
+var METHOD = 2; // Parse individual project pages
+// var METHOD = 3; // Mock projects for testing purposes
+
+var maxProjectCode = 298;
+var desiredProjectsNum = 209;
 var pagesNum = 19;
-var threadsNum = 2;
+var threadsNum = 40;
+var failAmount = 8000000;
 
 var attemptIndex = 0;
 var finished = false;
 var stop = false;
 var nextPageIndex = 0;
 var finishedThreadsNum = 0;
+var finishedProjectCodesNum = 0;
 
 $(function () {
-    for (var i = 0; i < threadsNum; i++) {
-        requestNextPage();
+    if (METHOD == 1) {
+        for (var i = 0; i < threadsNum; i++) {
+            requestNextPage();
+        }
+    } else if (METHOD == 2) {
+        for (var i = 1; i <= maxProjectCode; i++) {
+            requestPage(i);
+        }
+    } else {
+        initTestProjects();
     }
 });
 
 var projects = [];
+
+/* METHOD 1 */
 
 function requestNextPage() {
     nextPageIndex++;
@@ -54,11 +71,11 @@ function processResult(status, result) {
         var resultDOM = $(result);
 
         resultDOM.find(".project-card").each(function (index, element) {
-            var name = $(element).find("h1 a").text().trim();
-            var desc = $(element).find(".desc").text().trim();
-            var cost = Number($(element).find(".sum").text().replace(/ /g, "").replace("грн.", ""));
-            var votesNum = Number($(element).find(".total").text().trim());
-            console.log(votesNum + " / " + cost + " / " + desc + " / " + name);
+            var name = $(resultDOM).find("h1 a").text().trim();
+            var desc = $(resultDOM).find(".desc").text().trim();
+            var cost = Number($(resultDOM).find(".sum").text().replace(/ /g, "").replace("грн.", ""));
+            var votesNum = Number($(resultDOM).find(".total").text().trim());
+            // console.log(votesNum + " / " + cost + " / " + desc + " / " + name);
             projects.push({
                 name: name,
                 desc: desc,
@@ -78,13 +95,75 @@ function processResult(status, result) {
     var finish = finished || stop || (projects.length == desiredProjectsNum);
     if (finish) {
         if (!finished) {
-            finished = true;
-            $("#status").text("Знайдено проектів: " + projects.length);
-            $("#stop-button").hide();
-            processFoundProjects();
+            doOnRetrievalFinish();
         }
     } else {
         requestNextPage();
+    }
+}
+
+/* METHOD 2 */
+
+function requestPage(code) {
+    var url = "https://adm.dniprorada.gov.ua/projects/show/" + code;
+    doCORSRequest({
+        method: 'GET',
+        url: url
+    }, function (status, result) {
+        processProjectPage(code, status, result);
+    });
+}
+
+function processProjectPage(code, status, result) {
+    if (finished) {
+        return;
+    }
+    finishedProjectCodesNum++;
+    $("#status").html("Зачекайте. Обробляється сторінка " + finishedProjectCodesNum
+        + " з " + maxProjectCode + "...<br>"
+        + "Знайдено активних проектів: " + projects.length);
+    if (status == 200) {
+        var resultDOM = $(result);
+
+        var isActive = resultDOM.find("span.status-3").length > 0;
+        if (!isActive) {
+            return;
+        }
+
+        var name = resultDOM.find("section.project-info h1").text().trim();
+        var desc = resultDOM.find("div.desc p").text().trim();
+        var cost = Number(resultDOM.find("div.amount strong").text().replace(/ /g, "").replace("грн.", ""));
+        var votesNum = Number(resultDOM.find(".supported .num").text().trim());
+        //console.log(votesNum + " / " + cost + " / " + desc + " / " + name);
+        projects.push({
+            name: name,
+            desc: desc,
+            cost: cost,
+            votesNum: votesNum,
+            code: code
+        });
+
+        var timeLeft = resultDOM.find(".time-left .num").text().trim();
+        if (timeLeft != "") {
+            $("#time-left").text("До закінчення голосування залишилось " + timeLeft);
+        }
+
+        removeDuplicateProjects();
+    }
+
+    if (finishedProjectCodesNum == maxProjectCode || stop) {
+        doOnRetrievalFinish();
+    }
+}
+
+/* PROCESSING RESULTS */
+
+function doOnRetrievalFinish() {
+    if (!finished) {
+        finished = true;
+        $("#status").text("Знайдено проектів: " + projects.length);
+        $("#stop-button").hide();
+        processFoundProjects();
     }
 }
 
@@ -97,8 +176,9 @@ function formatNumber(num) {
 }
 
 function shortStr(str) {
-    if (str.length > 200) {
-        return str.substr(0, 200) + "...";
+    var maxLen = 150;
+    if (str.length > maxLen) {
+        return str.substr(0, maxLen) + "...";
     }
     return str;
 }
@@ -133,13 +213,15 @@ function processFoundProjects() {
             order++;
             budgetSum += project.cost;
             var selectedProjectClass = project.name.includes("172") ? " project-selected" : "";
-            projectsDiv.append("<div class='project" + selectedProjectClass + "'>"
-                + "<p class='project-order'>#" + order + "</p>"
-                + "<p class='project-votes'>" + project.votesNum + "</p>"
-                + "<p class='project-cost'>" + formatNumber(project.cost) + "</p>"
-                + "<p class='project-cost-sum'>" + formatNumber(budgetSum) + "</p>"
-                + "<p class='project-name'>" + project.name + "</p>"
-                + "<p class='project-desc'>" + shortStr(project.desc) + "</p>"
+            var failedProjectClass = budgetSum > failAmount ? " project-failed" : "";
+            projectsDiv.append("<div class='project" + selectedProjectClass + failedProjectClass + "'>"
+                + "<div class='project-order'>" + order + "</div>"
+                + "<div class='project-votes'><i class='fa fa-thumbs-up' aria-hidden='true'></i> " + project.votesNum + "</div>"
+                + "<div class='project-cost'><i class='fa fa-money' aria-hidden='true'></i> " + formatNumber(project.cost) + " (∑ " + formatNumber(budgetSum) + ")</div>"
+                + "<div class='project-code'>#" + project.code + "</div>"
+                + "<div class='project-name'>" + project.name + "</div>"
+                + "<div class='project-desc'>" + project.desc + "</div>"
+                + "<div class='project-fading'></div>"
                 + "</div>");
         }
     }
