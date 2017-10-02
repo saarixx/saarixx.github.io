@@ -130,7 +130,7 @@ function processProjectPage(code, status, result) {
             return;
         }
 
-        var name = resultDOM.find("section.project-info h1").text().trim();
+        var name = resultDOM.find("section.project-info h1").clone().children().remove().end().text().trim();
         var desc = resultDOM.find("div.desc p").text().trim();
         var cost = Number(resultDOM.find("div.amount strong").text().replace(/ /g, "").replace("грн.", ""));
         var votesNum = Number(resultDOM.find(".supported .num").text().trim());
