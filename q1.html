@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Поиск подарков</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <style>
+        /* Space out content a bit */
+
+        body {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        /* Everything but the jumbotron gets side spacing for mobile first views */
+
+        .header,
+        .marketing,
+        .footer {
+            padding-right: 1rem;
+            padding-left: 1rem;
+        }
+
+        /* Custom page header */
+
+        .header {
+            padding-bottom: 1rem;
+            border-bottom: .05rem solid #e5e5e5;
+        }
+
+        /* Make the masthead heading the same height as the navigation */
+
+        .header h3 {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 3rem;
+        }
+
+        /* Custom page footer */
+
+        .footer {
+            padding-top: 1.5rem;
+            color: #777;
+            border-top: .05rem solid #e5e5e5;
+        }
+
+        /* Customize container */
+
+        @media (min-width: 48em) {
+            .container {
+                max-width: 46rem;
+            }
+        }
+
+        .container-narrow>hr {
+            margin: 2rem 0;
+        }
+
+        /* Main marketing message and sign up button */
+
+        .jumbotron {
+            text-align: center;
+            border-bottom: .05rem solid #e5e5e5;
+        }
+
+        .jumbotron .btn {
+            padding: .75rem 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Supporting marketing content */
+
+        .marketing {
+            margin: 3rem 0;
+        }
+
+        .marketing p+h4 {
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive: Portrait tablets and up */
+
+        @media screen and (min-width: 48em) {
+            /* Remove the padding we set earlier */
+            .header,
+            .marketing,
+            .footer {
+                padding-right: 0;
+                padding-left: 0;
+            }
+
+            /* Space out the masthead */
+            .header {
+                margin-bottom: 2rem;
+            }
+
+            /* Remove the bottom border on the jumbotron for visual effect */
+            .jumbotron {
+                border-bottom: 0;
+            }
+        }
+
+        #answerinput {
+            height: 75px;
+            font-size: 50px;
+            width: 200px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .alert {
+            font-size: 25px;
+        }
+
+        #correctDiv {
+            display: none;
+        }
+
+        #wrongDiv {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1 id="tasktitle" class="display-3">Задание</h1>
+            <p id="question" class="lead">Найди в кухне 3 банки с витаминами. Сколько весят все эти банки вместе? Ответ запиши в граммах в текстовое поле
+                и нажми кнопку.</p>
+            <p>
+                <form>
+                    <div class="form-group">
+                        <input id="answerinput" type="text" class="form-control" />
+                    </div>
+                </form>
+                <a id="answerbutton" class="btn btn-lg btn-success" href="#" role="button">Ответить</a>
+            </p>
+            <div id="correctDiv" class="alert alert-success" role="alert">
+                Точно! Твой подарок и следующая подсказка ждут тебя в ...
+            </div>
+            <div id="wrongDiv" class="alert alert-danger" role="alert">
+                Ой-ой! Тут ошибка!
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#correctDiv").hide();
+        $("#wrongDiv").hide();
+        document.getElementById("answerbutton").addEventListener("click", doAnswer);
+        function doAnswer(e) {
+            var answer = $("#answerinput").val();
+            var num = Number(answer);
+            var correctDiv = document.getElementById("correctDiv");
+            var wrongDiv = document.getElementById("wrongDiv");
+            if (num >= 1010 && num <= 1030) {
+                $("#tasktitle").text("Задание выполнено");
+                $("#wrongDiv").hide(500);
+                $("#answerinput").hide(1000);
+                $("#answerbutton").hide(1000);
+                $("#question").hide(1000);
+                $("#correctDiv").fadeIn(5000);
+            } else {
+                $("#correctDiv").hide();
+                $("#wrongDiv").show(1000);
+                setTimeout(() => {
+                    $("#wrongDiv").hide(500);
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+
+</html>
