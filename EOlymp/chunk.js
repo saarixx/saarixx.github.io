@@ -45,7 +45,23 @@ function finishScoreUpdate() {
         }
       }
     });
+    fixTableNumberAlignment();
     needScoreUpdate = false;
+}
+
+function fixTableNumberAlignment() {
+    const tds = document.getElementsByTagName('td');
+    
+    const numberRegex = /^\d+$/;
+    
+    for (let td of tds) {
+        if (td.children.length === 1 && td.children[0].tagName === 'SPAN') {
+            const span = td.children[0];
+            if (numberRegex.test(span.textContent.trim())) {
+                td.style.textAlign = 'center';
+            }
+        }
+    }
 }
 
 
