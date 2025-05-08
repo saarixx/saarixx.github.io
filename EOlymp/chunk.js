@@ -708,16 +708,16 @@ try {
                 }
             }))))
         }
-        
+
         // SX
         function u(e) {
             var t = e.breakdown;
             updateScore();
             return "ICPC" === e.format ? l.createElement(c, {
                 breakdown: t
-            }) : (null == t ? void 0 : t.score || t.attempts) ? l.createElement(s, {
+            }) : (null == t ? void 0 : t.score || t.attempts) ? l.createElement(d, {
                 percentage: null == t ? void 0 : t.percentage
-            }, l.createElement(r.default, {
+            }, l.createElement(a.default, {
                 variant: "bodyMedium",
                 color: "surface.onSurface"
             }, ".,." + Math.round(100 * t.score) / 100 + " " + (t.attempts + (t.percentage == 1)) + " " + t.solvedIn)) : l.createElement(l.Fragment, null, "—")
