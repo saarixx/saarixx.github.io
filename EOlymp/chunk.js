@@ -1,14 +1,12 @@
 // SX
-let needScoreUpdate = false;
+let neededScoreUpdatesNum = 0;
 let finishScoreUpdateTimeoutId = 0;
 
 function updateScore() {
-    // if (needScoreUpdate) {
-    //     return;
-    // }
-    needScoreUpdate = true;
-    clearTimeout(finishScoreUpdateTimeoutId);
-    finishScoreUpdateTimeoutId = setTimeout(finishScoreUpdate, 1);
+    neededScoreUpdatesNum = 20;
+    if (finishScoreUpdateTimeoutId == 0) {
+        finishScoreUpdateTimeoutId = setInterval(finishScoreUpdate, 10);
+    }
 }
 
 function finishScoreUpdate() {
@@ -48,7 +46,11 @@ function finishScoreUpdate() {
       }
     });
     fixTableNumberAlignment();
-    needScoreUpdate = false;
+    neededScoreUpdatesNum--;
+    if (neededScoreUpdatesNum <= 0 && finishScoreUpdateTimeoutId != 0) {
+        clearTimeout(finishScoreUpdateTimeoutId);
+        finishScoreUpdateTimeoutId = 0;
+    }
 }
 
 function fixTableNumberAlignment() {
