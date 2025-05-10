@@ -1,12 +1,14 @@
 // SX
-var needScoreUpdate = false;
+let needScoreUpdate = false;
+let finishScoreUpdateTimeoutId = 0;
 
 function updateScore() {
-    if (needScoreUpdate) {
-        return;
-    }
+    // if (needScoreUpdate) {
+    //     return;
+    // }
     needScoreUpdate = true;
-    setTimeout(finishScoreUpdate, 1);
+    clearTimeout(finishScoreUpdateTimeoutId);
+    finishScoreUpdateTimeoutId = setTimeout(finishScoreUpdate, 1);
 }
 
 function finishScoreUpdate() {
