@@ -6,7 +6,7 @@ function updateScore() {
         return;
     }
     needScoreUpdate = true;
-    setInterval(finishScoreUpdate, 1);
+    setTimeout(finishScoreUpdate, 1);
 }
 
 function finishScoreUpdate() {
