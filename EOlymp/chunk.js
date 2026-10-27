@@ -2889,7 +2889,7 @@ function fixTableNumberAlignment() {
             t.jsxs)("div", {
                 className: (0,
                 s.c)("inline-flex items-center gap-1 rounded px-2 py-0.5 text-sm font-medium", i(e, l)),
-                children: [!n && 12345, a(e) && (0,
+                children: [!n && (".,." + Math.round(100 * t.score) / 100 + " " + (t.attempts + (t.percentage == 1)) + " " + t.solvedIn), a(e) && (0,
                 t.jsxs)("span", {
                     className: "text-xs opacity-70",
                     children: ["?", e.pending || ""]
